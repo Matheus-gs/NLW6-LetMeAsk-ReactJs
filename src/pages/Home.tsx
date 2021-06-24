@@ -11,6 +11,7 @@ import { Button } from "../components/Button";
 import { FormEvent } from "react";
 import { useState } from "react";
 import { database } from "../services/firebase";
+import { ifError } from "assert";
 
 export function Home() {
   const history = useHistory();
@@ -35,15 +36,19 @@ export function Home() {
     }
 
     const roomRef = await database.ref(`rooms/${roomCode}`).get();
-  
-    if(!roomRef.exists()){
-      alert('Room does not exists.')
-      return
+
+    if (!roomRef.exists()) {
+      alert("Room does not exists.");
+      return;
     }
 
-    history.push(`/rooms/${roomCode}`)
-
+    if (roomRef.val().endedAt) {
+      alert("Room already closed");
+      return;
     }
+
+    history.push(`/rooms/${roomCode}`);
+  }
 
   return (
     <div id="page-auth">
